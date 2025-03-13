@@ -1,18 +1,20 @@
-use std::{io::{prelude::*, BufReader}, net::{TcpListener, TcpStream}};
-
-use log::{info, debug};
+use log::{debug, info};
+use std::{
+    io::{BufReader, prelude::*},
+    net::{TcpListener, TcpStream},
+};
 
 #[derive(PartialEq, Debug)]
 pub struct RouteCallbacks {
     pub microservice_path: Option<String>,
-    pub run_function: Option<fn(&TcpStream)>
+    pub run_function: Option<fn(&TcpStream)>,
 }
 
 #[derive(PartialEq, Debug)]
 pub struct Route {
     pub method: String,
     pub path: String,
-    pub route_callbacks: RouteCallbacks
+    pub route_callbacks: RouteCallbacks,
 }
 
 pub struct Router {
@@ -36,7 +38,7 @@ impl Router {
         Router {
             routes: vec![],
             port,
-            host
+            host,
         }
     }
 
@@ -77,7 +79,7 @@ impl Router {
             let stream = stream.unwrap();
             debug!("Connection established");
             self.handle_connection(stream);
-        };
+        }
     }
 }
 
@@ -99,7 +101,7 @@ mod tests {
         router.register_route(Route {
             method: "GET".to_string(),
             path: "/".to_string(),
-            route_callbacks: Default::default()
+            route_callbacks: Default::default(),
         });
         assert_eq!(router.routes[0].method, "GET".to_string());
         assert_eq!(router.routes[0].path, "/".to_string());

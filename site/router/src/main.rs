@@ -11,17 +11,17 @@ fn main() {
             method: "GET".to_string(),
             path: "/".to_string(),
             route_callbacks: router::RouteCallbacks {
-                    microservice_path: None,
-                    run_function: Some(root)
-                }
-            })
+                microservice_path: None,
+                run_function: Some(root),
+            },
+        })
         .register_route(router::Route {
             method: "GET".to_string(),
             path: "/favicon.ico".to_string(),
             route_callbacks: router::RouteCallbacks {
-                    microservice_path: None,
-                    run_function: Some(root)
-                }
-            })
+                microservice_path: None,
+                run_function: Some(root),
+            },
+        })
         .start();
 }
