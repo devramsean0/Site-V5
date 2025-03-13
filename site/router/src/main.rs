@@ -1,7 +1,7 @@
-use std::{io::Write, net::TcpStream};
+use std::net::TcpStream;
 
-fn root(mut stream: &TcpStream) {
-    stream.write(b"HTTP/1.1 200 OK\r\n\r\n").unwrap();
+fn root(mut _stream: &TcpStream) -> String {
+    "HTTP/1.1 200 OK\r\n\r\n".to_string()
 }
 
 fn main() {

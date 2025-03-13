@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 log = "0.4.26"
+md5 = "0.7.0"
+rusqlite = { version = "0.34.0", features = ["bundled"] }

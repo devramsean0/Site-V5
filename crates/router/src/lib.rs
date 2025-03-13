@@ -4,10 +4,12 @@ use std::{
     net::{TcpListener, TcpStream},
 };
 
+mod cache_db;
+
 #[derive(PartialEq, Debug)]
 pub struct RouteCallbacks {
     pub microservice_path: Option<String>,
-    pub run_function: Option<fn(&TcpStream)>,
+    pub run_function: Option<fn(&TcpStream) -> String>,
 }
 
 #[derive(PartialEq, Debug)]
@@ -21,6 +23,7 @@ pub struct Router {
     routes: Vec<Route>,
     port: i32,
     host: String,
+    db: rusqlite::Connection,
 }
 
 impl Default for RouteCallbacks {
@@ -34,11 +37,15 @@ impl Default for RouteCallbacks {
 
 impl Router {
     pub fn new(host: String, port: i32) -> Self {
+        info!("Establishing Cache DB");
+        let conn = rusqlite::Connection::open_in_memory().unwrap();
+        cache_db::run_migrations(&conn);
         info!("Creating router struct");
         Router {
             routes: vec![],
             port,
             host,
+            db: conn
         }
     }
 
@@ -48,7 +55,7 @@ impl Router {
         self
     }
 
-    fn handle_connection(&self, stream: TcpStream) {
+    fn handle_connection(&self, mut stream: TcpStream) {
         let buf_reader = BufReader::new(&stream);
         let http_request: Vec<_> = buf_reader
             .lines()
@@ -61,12 +68,21 @@ impl Router {
         for route in &self.routes {
             if route.method == split_path[0] && route.path == split_path[1] {
                 debug!("Route found for {} {}", route.method, route.path);
-                if route.route_callbacks.microservice_path.is_some() {
-                    debug!("Microservice path found");
-                    // Call microservice
-                } else if route.route_callbacks.run_function.is_some() {
-                    debug!("Run function found");
-                    route.route_callbacks.run_function.unwrap()(&stream);
+                let cache_lookup = cache_db::retrieve_web_cache(&self.db, route.method.clone(), route.path.clone());
+                if cache_lookup.len() > 0 {
+                    debug!("Cache hit");
+                    stream.write(cache_lookup[0].body.as_bytes()).unwrap();
+                    info!("Cache hit for {} {}", route.method, route.path);
+                } else {
+                    if route.route_callbacks.microservice_path.is_some() {
+                        debug!("Microservice path found");
+                        // Call microservice
+                    } else if route.route_callbacks.run_function.is_some() {
+                        debug!("Run function found");
+                        let return_data = route.route_callbacks.run_function.unwrap()(&stream);
+                        stream.write(return_data.as_bytes()).unwrap();
+                        cache_db::insert_web_cache(&self.db, route.method.clone(), route.path.clone(), return_data);
+                    }
                 }
             }
         }
