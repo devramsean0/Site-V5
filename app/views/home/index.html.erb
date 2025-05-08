@@ -1,0 +1,7 @@
+<main class="grid grid-cols-3 grid-rows-10">
+    <%= render (WindowComponent.new(title: "Spotify")) do |component| %>
+        <% component.with_body do %>
+            <p>Hello, this is a test</p>
+        <% end %>
+    <% end %>
+</main>
