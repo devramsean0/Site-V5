@@ -1,0 +1,3 @@
+[submodule "app/assets/stylesheets/7.css"]
+	path = app/assets/stylesheets/7.css
+	url = https://github.com/khang-nd/7.css.git
