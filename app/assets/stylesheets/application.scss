@@ -1,1 +1,5 @@
-@use "7.css/gui/index.scss";
+@use "../../../vendor/css/7.css/gui/index.scss";
+
+.window-text-font-size {
+    font-size: 16px;
+}

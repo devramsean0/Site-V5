@@ -23,8 +23,5 @@ module SiteV5
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
-
-    # Exclude the 7.css docs from css bundling
-    config.assets.precompile.reject! { |path| path.start_with?('7.css/docs/') }
   end
 end

@@ -22,7 +22,18 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="background">
+    <div class="window glass active" style="max-width: 100%">
+      <section class="title-bar">
+        <div class="title-bar-text">Sean Outram</div>
+        <nav class="title-bar-controls">
+          <button aria-label="Minimize"></button>
+          <button aria-label="Close"></button>
+        </nav>
+      </section>
+      <main class="window-body has-space">
+        <%= yield %>
+      </main>
+    </div>
   </body>
 </html>
